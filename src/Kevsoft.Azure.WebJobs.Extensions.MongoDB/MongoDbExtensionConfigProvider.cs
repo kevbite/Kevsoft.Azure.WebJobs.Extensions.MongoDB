@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Description;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Config;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 {
     [Extension("MongoDB")]
-    public class MongoDbExtensionConfigProvider : IExtensionConfigProvider
+    public class MongoDbExtensionConfigProvider : IExtensionConfigProvider, IMongoDbContextProvider
     {
         private readonly MongoDbOptions _options;
         private readonly IMongoDbCollectionFactory _mongoDbCollectionFactory;
@@ -29,6 +29,10 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 
             var inputOuputBindingRule = context.AddBindingRule<MongoDbAttribute>();
             inputOuputBindingRule.AddValidator(ValidateConnectionString);
+
+            inputOuputBindingRule.BindToCollector<DocumentOpenType>(typeof(MongoDbCollectorBuilder<>), this);
+
+
             inputOuputBindingRule.WhenIsNotNull(nameof(MongoDbAttribute.Id))
                 .BindToValueProvider(CreateValueBinderAsync);
         }
@@ -50,12 +54,39 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 
         private Task<IValueBinder> CreateValueBinderAsync(MongoDbAttribute attribute, Type type)
         {
-            var connectionOptions = ConnectionOptionsBuilder.Build(attribute, _options);
             var binderType = typeof(MongoDbValueBinder<>).MakeGenericType(type);
+            var context = CreateMongoDbContext(attribute);
 
-            var valueBinder = (IValueBinder)Activator.CreateInstance(binderType, _mongoDbCollectionFactory, attribute, connectionOptions);
+            var valueBinder = (IValueBinder)Activator.CreateInstance(binderType, context);
 
             return Task.FromResult(valueBinder);
         }
+
+        public MongoDbContext CreateMongoDbContext(MongoDbAttribute attribute)
+        {
+            var connectionOptions = ConnectionOptionsBuilder.Build(attribute, _options);
+
+            return new MongoDbContext(attribute, _mongoDbCollectionFactory, connectionOptions);
+        }
+
+        private class DocumentOpenType : OpenType.Poco
+        {
+            public override bool IsMatch(Type type, OpenTypeMatchContext context)
+            {
+                if (type.IsGenericType
+                    && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    return false;
+                }
+
+                if (type.FullName == "System.Object")
+                {
+                    return true;
+                }
+
+                return base.IsMatch(type, context);
+            }
+        }
     }
 }
+

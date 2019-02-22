@@ -8,6 +8,12 @@ namespace Kevsoft.Azure.WebJobs
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
     public sealed class MongoDbAttribute : Attribute
     {
+        public MongoDbAttribute(string databaseName, string collectionName)
+        {
+            DatabaseName = databaseName;
+            CollectionName = collectionName;
+        }
+
         public MongoDbAttribute(string databaseName, string collectionName, string id)
         {
             DatabaseName = databaseName;

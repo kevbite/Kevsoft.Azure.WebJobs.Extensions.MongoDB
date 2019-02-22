@@ -12,11 +12,11 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
         private readonly IMongoCollection<T> _collection;
         private readonly MongoDbAttribute _attribute;
         
-        public MongoDbValueBinder(IMongoDbCollectionFactory mongoDbCollectionFactory, MongoDbAttribute attribute, ConnectionOptions options)
+        public MongoDbValueBinder(MongoDbContext context)
         {
-            _collection = mongoDbCollectionFactory.GetCollection<T>(options);
+            _collection = context.GetCollection<T>();
 
-            _attribute = attribute;
+            _attribute = context.ResolvedAttribute;
         }
 
         public async Task<object> GetValueAsync()
