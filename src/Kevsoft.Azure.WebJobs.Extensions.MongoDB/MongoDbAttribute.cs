@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Azure.WebJobs.Description;
+using MongoDB.Bson;
 
 namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 {
@@ -7,10 +8,20 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
     public sealed class MongoDbAttribute : Attribute
     {
+        public MongoDbAttribute(string databaseName, string collectionName, string id)
+        {
+            DatabaseName = databaseName;
+            CollectionName = collectionName;
+            Id = id;
+        }
+
         [AutoResolve]
         public string Id { get; set; }
 
-        public string ConnectionString { get; set; }
+        public Type IdType { get; set; } = typeof(ObjectId);
+        
+        [AppSetting]
+        public string ConnectionStringSetting { get; set; }
 
         public string DatabaseName { get; set; }
 

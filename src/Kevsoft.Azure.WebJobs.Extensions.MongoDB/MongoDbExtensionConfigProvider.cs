@@ -27,21 +27,20 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
             }
 
             var inputOuputBindingRule = context.AddBindingRule<MongoDbAttribute>();
-            inputOuputBindingRule.AddValidator(ValidateConnectionStringUri);
+            inputOuputBindingRule.AddValidator(ValidateConnectionString);
             inputOuputBindingRule.WhenIsNotNull(nameof(MongoDbAttribute.Id))
                 .BindToValueProvider(CreateValueBinderAsync);
-
         }
 
-        private void ValidateConnectionStringUri(MongoDbAttribute attribute, Type type)
+        private void ValidateConnectionString(MongoDbAttribute attribute, Type type)
         {
-            var connectionStringUri = !string.IsNullOrEmpty(_options.ConnectionString)
+            var connectionString = !string.IsNullOrEmpty(_options.ConnectionString)
                 ? _options.ConnectionString
-                : attribute.ConnectionString;
+                : attribute.ConnectionStringSetting;
 
-            if (string.IsNullOrEmpty(connectionStringUri))
+            if (string.IsNullOrEmpty(connectionString))
             {
-                var attributeProperty = $"{nameof(MongoDbAttribute)}.{nameof(MongoDbAttribute.ConnectionString)}";
+                var attributeProperty = $"{nameof(MongoDbAttribute)}.{nameof(MongoDbAttribute.ConnectionStringSetting)}";
                 var optionsProperty = $"{nameof(MongoDbOptions)}.{nameof(MongoDbOptions.ConnectionString)}";
 
                 throw new InvalidOperationException($"The MongoDB ConnectionString must be set either via the '{attributeProperty}' property or via '{optionsProperty}'.");

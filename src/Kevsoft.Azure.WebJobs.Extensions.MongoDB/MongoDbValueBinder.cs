@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs.Host.Bindings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
@@ -31,7 +32,17 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 
         private FilterDefinition<T> CreateFilterDefinition()
         {
-            var filterDefinition = Builders<T>.Filter.Eq("_id", _attribute.Id);
+            object id;
+            if (_attribute.IdType == typeof(ObjectId))
+            {
+                id = ObjectId.Parse(_attribute.Id);
+            }
+            else
+            {
+                id = Convert.ChangeType(_attribute.Id, _attribute.IdType);
+            }
+
+            var filterDefinition = Builders<T>.Filter.Eq("_id", id);
             return filterDefinition;
         }
 

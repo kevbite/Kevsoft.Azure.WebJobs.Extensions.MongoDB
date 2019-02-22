@@ -8,12 +8,36 @@ using MongoDB.Bson;
 
 namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB.Example
 {
-    public static class Function1
+    public static class QueryByIdFunctions
     {
-        [FunctionName("Function1")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "items/{id}")] HttpRequest req,
-            [MongoDb(ConnectionString = "mongodb://localhost", CollectionName = "test", DatabaseName = "test", Id = "{id}")]
+        [FunctionName("QueryIdByObjectId")]
+        public static IActionResult RunByObjectId(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test/by-object-id/{id}")] HttpRequest req,
+            [MongoDb("test", "test", "{id}", ConnectionStringSetting = "MongoDbUrl")]
+            BsonDocument document,
+            ILogger log)
+        {
+            var value = document.ToJson();
+
+            return new OkObjectResult(value);
+        }
+
+        [FunctionName("QueryIdByInt")]
+        public static IActionResult RunByInt(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test/by-int/{id}")] HttpRequest req,
+            [MongoDb("test", "test", "{id}", ConnectionStringSetting = "MongoDbUrl", IdType = typeof(int))]
+            BsonDocument document,
+            ILogger log)
+        {
+            var value = document.ToJson();
+
+            return new OkObjectResult(value);
+        }
+
+        [FunctionName("QueryIdByString")]
+        public static IActionResult RunByString(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test/by-string/{id}")] HttpRequest req,
+            [MongoDb("test", "test", "{id}", ConnectionStringSetting = "MongoDbUrl", IdType = typeof(string))]
             BsonDocument document,
             ILogger log)
         {
