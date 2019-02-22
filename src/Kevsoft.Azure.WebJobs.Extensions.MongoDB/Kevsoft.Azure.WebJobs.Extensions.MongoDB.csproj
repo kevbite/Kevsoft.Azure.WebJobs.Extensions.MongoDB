@@ -4,6 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Kevsoft.Azure.WebJobs.Extensions.MongoDB</PackageId>
+    <Version>0.0.0</Version>
+    <Authors>Kevin Smith</Authors>
+    <Company>Kevsoft</Company>
+    <Description>WebJobs/Azure Functions trigger providing reading and writing MongoDB documents directly to your functions</Description>
+    <PackageProjectUrl>https://github.com/kevbite/Kevsoft.Azure.WebJobs.Extensions.MongoDB</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kevbite/Kevsoft.Azure.WebJobs.Extensions.MongoDB.git</RepositoryUrl>
+    <PackageTags>Functions;Azure;AzureFunctions;MongoDB;Mongo;WebJobs;Func</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.7.3" />
