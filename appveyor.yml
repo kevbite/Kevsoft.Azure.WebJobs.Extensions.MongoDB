@@ -1,0 +1,33 @@
+image: Visual Studio 2017
+
+skip_tags: true
+
+configuration:
+  - Release
+  
+services:
+  - mongodb
+
+build_script:
+  - ps: .\build.ps1
+
+test: off
+
+for:
+-
+  branches:
+    only:
+      - master
+
+  version: 0.{build}.0
+
+  deploy:
+    - provider: Environment
+      name: NuGet.org
+
+-
+  branches:
+    except:
+    - master
+
+  version: 0.0.0.{build}-{branch}
