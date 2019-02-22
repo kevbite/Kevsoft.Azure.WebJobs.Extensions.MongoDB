@@ -2,8 +2,12 @@
 
 namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 {
-    public interface IMongoDbCollectionFactory
+    public interface IMongoDbFactory
     {
         IMongoCollection<T> GetCollection<T>(ConnectionOptions options);
+
+        IMongoDatabase GetDatabase(ConnectionOptions options);
+
+        MongoClient GetClient(ConnectionOptions options);
     }
 }

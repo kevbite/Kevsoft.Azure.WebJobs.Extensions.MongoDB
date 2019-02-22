@@ -5,23 +5,33 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
     public class MongoDbContext
     {
         public MongoDbContext(MongoDbAttribute resolvedAttribute,
-            IMongoDbCollectionFactory collectionFactory,
+            IMongoDbFactory factory,
             ConnectionOptions connectionOptions)
         {
             ResolvedAttribute = resolvedAttribute;
-            CollectionFactory = collectionFactory;
+            Factory = factory;
             ConnectionOptions = connectionOptions;
         }
 
         public MongoDbAttribute ResolvedAttribute { get; }
 
-        public IMongoDbCollectionFactory CollectionFactory { get; }
+        public IMongoDbFactory Factory { get; }
 
         public ConnectionOptions ConnectionOptions { get; }
 
         public IMongoCollection<T> GetCollection<T>()
         {
-            return CollectionFactory.GetCollection<T>(ConnectionOptions);
+            return Factory.GetCollection<T>(ConnectionOptions);
+        }
+
+        public IMongoDatabase GetDatabase()
+        {
+            return Factory.GetDatabase(ConnectionOptions);
+        }
+
+        public MongoClient GetClient()
+        {
+            return Factory.GetClient(ConnectionOptions);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Description;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Config;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 
 namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 {
@@ -12,12 +14,12 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
     public class MongoDbExtensionConfigProvider : IExtensionConfigProvider, IMongoDbContextProvider
     {
         private readonly MongoDbOptions _options;
-        private readonly IMongoDbCollectionFactory _mongoDbCollectionFactory;
+        private readonly IMongoDbFactory _mongoDbFactory;
         
-        public MongoDbExtensionConfigProvider(IOptions<MongoDbOptions> options, IMongoDbCollectionFactory mongoDbCollectionFactory)
+        public MongoDbExtensionConfigProvider(IOptions<MongoDbOptions> options, IMongoDbFactory mongoDbFactory)
         {
             _options = options.Value;
-            _mongoDbCollectionFactory = mongoDbCollectionFactory;
+            _mongoDbFactory = mongoDbFactory;
         }
 
         public void Initialize(ExtensionConfigContext context)
@@ -32,6 +34,10 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 
             inputOuputBindingRule.BindToCollector<DocumentOpenType>(typeof(MongoDbCollectorBuilder<>), this);
 
+            inputOuputBindingRule.BindToInput<MongoClient>(new MongoClientBuilder(this));
+            inputOuputBindingRule.BindToInput<IMongoDatabase>(new MongoDatabaseClientBuilder(this));
+                
+            inputOuputBindingRule.BindToInput<IMongoCollection<DocumentOpenType>>(typeof(MongoCollectionBuilder<>), this);
 
             inputOuputBindingRule.WhenIsNotNull(nameof(MongoDbAttribute.Id))
                 .BindToValueProvider(CreateValueBinderAsync);
@@ -66,7 +72,7 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
         {
             var connectionOptions = ConnectionOptionsBuilder.Build(attribute, _options);
 
-            return new MongoDbContext(attribute, _mongoDbCollectionFactory, connectionOptions);
+            return new MongoDbContext(attribute, _mongoDbFactory, connectionOptions);
         }
 
         private class DocumentOpenType : OpenType.Poco
@@ -86,6 +92,22 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 
                 return base.IsMatch(type, context);
             }
+        }
+    }
+
+    public class MongoCollectionBuilder<T> : IConverter<MongoDbAttribute, IMongoCollection<T>>
+    {
+        private readonly IMongoDbContextProvider _mongoDbExtensionConfigProvider;
+
+        public MongoCollectionBuilder(IMongoDbContextProvider mongoDbExtensionConfigProvider)
+        {
+            _mongoDbExtensionConfigProvider = mongoDbExtensionConfigProvider;
+        }
+
+        public IMongoCollection<T> Convert(MongoDbAttribute input)
+        {
+            return _mongoDbExtensionConfigProvider.CreateMongoDbContext(input)
+                .GetCollection<T>();
         }
     }
 }

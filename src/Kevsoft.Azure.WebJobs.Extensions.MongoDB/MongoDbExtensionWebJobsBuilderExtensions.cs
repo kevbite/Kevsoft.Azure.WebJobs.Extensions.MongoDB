@@ -38,7 +38,7 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
                     config.GetSection(path).Bind(options);  
                 });
 
-            builder.Services.AddSingleton<IMongoDbCollectionFactory, MongoDbCollectionFactory>();
+            builder.Services.AddSingleton<IMongoDbFactory, MongoDbFactory>();
 
             return builder;
         }
