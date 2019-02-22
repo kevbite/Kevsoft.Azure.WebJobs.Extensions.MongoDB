@@ -2,7 +2,7 @@
 using Microsoft.Azure.WebJobs.Description;
 using MongoDB.Bson;
 
-namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
+namespace Kevsoft.Azure.WebJobs
 {
     [Binding]
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
@@ -23,8 +23,10 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
         [AppSetting]
         public string ConnectionStringSetting { get; set; }
 
+        [AutoResolve]
         public string DatabaseName { get; set; }
 
+        [AutoResolve]
         public string CollectionName { get; set; }
 
         public bool ReadOnly { get; set; }

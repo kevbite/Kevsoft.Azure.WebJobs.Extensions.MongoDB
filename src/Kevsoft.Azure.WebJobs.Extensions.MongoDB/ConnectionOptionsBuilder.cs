@@ -1,4 +1,6 @@
-﻿namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
+﻿using Microsoft.Azure.WebJobs;
+
+namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB
 {
     internal static class ConnectionOptionsBuilder
     {

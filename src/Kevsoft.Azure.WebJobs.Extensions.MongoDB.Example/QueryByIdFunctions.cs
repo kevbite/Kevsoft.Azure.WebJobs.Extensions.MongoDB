@@ -12,8 +12,8 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB.Example
     {
         [FunctionName("QueryIdByObjectId")]
         public static IActionResult RunByObjectId(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test/by-object-id/{id}")] HttpRequest req,
-            [MongoDb("test", "test", "{id}", ConnectionStringSetting = "MongoDbUrl")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{database}/{collection}/by-object-id/{id}")] HttpRequest req,
+            [MongoDb("{database}", "{collection}", "{id}", ConnectionStringSetting = "MongoDbUrl")]
             BsonDocument document,
             ILogger log)
         {
@@ -24,8 +24,8 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB.Example
 
         [FunctionName("QueryIdByInt")]
         public static IActionResult RunByInt(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test/by-int/{id}")] HttpRequest req,
-            [MongoDb("test", "test", "{id}", ConnectionStringSetting = "MongoDbUrl", IdType = typeof(int))]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{database}/{collection}/by-int/{id}")] HttpRequest req,
+            [MongoDb("{database}", "{collection}", "{id}", ConnectionStringSetting = "MongoDbUrl", IdType = typeof(int))]
             BsonDocument document,
             ILogger log)
         {
@@ -36,8 +36,8 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB.Example
 
         [FunctionName("QueryIdByString")]
         public static IActionResult RunByString(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test/by-string/{id}")] HttpRequest req,
-            [MongoDb("test", "test", "{id}", ConnectionStringSetting = "MongoDbUrl", IdType = typeof(string))]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{database}/{collection}/by-string/{id}")] HttpRequest req,
+            [MongoDb("{database}", "{collection}", "{id}", ConnectionStringSetting = "MongoDbUrl", IdType = typeof(string))]
             BsonDocument document,
             ILogger log)
         {
