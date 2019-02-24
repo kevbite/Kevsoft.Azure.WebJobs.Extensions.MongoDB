@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -21,6 +22,12 @@ namespace Kevsoft.Azure.WebJobs.Extensions.MongoDB.Tests
             _host = BuildHost();
 
             await _host.StartAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async Task RunFunctionAsync(Expression<Action<TFunction>> expression)
+        {
+            await RunFunctionAsync(expression, new Dictionary<string, object>())
                 .ConfigureAwait(false);
         }
 
